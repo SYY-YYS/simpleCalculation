@@ -17,8 +17,12 @@ export async function connectToCluster(uri) {
     }
 }
 
+export async function identityCheck(collection, username, password) {
+    return await collection.find({ username: { $eq: username}, password: { $eq: password}}).toArray();
+};
 
-export async function executeCrudOperation() {
+
+export async function executeCrudOperation(action, loggedin) {
     const uri = process.env.DB_URI;
     let mongoClient;
 
@@ -26,19 +30,21 @@ export async function executeCrudOperation() {
         mongoClient = await connectToCluster(uri);
         const db = mongoClient.db("testapi");
         const collection = db.collection("userData");
+        var loggedin = loggedin
         // const collection = 
-        console.log("creating a colleciton")
+        console.log("checking identity")
 
-        // createDocument(db, 'samuel', 'samuel123', 1.5)
-        const userInfo = {
-            username: 'samuel',
-            password: 'samuel123',
-            timeOfPlaying: 1,
-            minTime: 1.5
+        switch (action) {
+            case "checkIdentity":
+                const backIdentity = await identityCheck(collection,'samuel3', 'samuel13');
+                console.log(Object.keys(backIdentity).length != 0 ? backIdentity: "identity not found")
+                break;
+            case "add":
+                const backUserInfo = await createDocument(collection, 'samuel3', 'samuel123', 1.5)
+                break;
+            case "newMatch"
         };
-        const result = await db.collection("userData").insertOne(userInfo);
-
-        console.log('succeeded!')
+        console.log('succeeded ',action)
         
 
     } catch (error) {
@@ -50,16 +56,20 @@ export async function executeCrudOperation() {
 };
 
 // for new user
-export async function createDocument(collection, username, password, minTime) {
+export async function createDocument(collection, username, password, timeOfCalculating, minTime) {
        
     const userInfo = {
         username: username,
         password: password,
-        timeOfPlaying: 1,
+        OperationStat: {
+            {timeOfCalculating: timeOfCalculating}
+
+        },
+        averageTimeOf1Calculation: 1,
         minTime: minTime
     };
 
-    await collection.insertOne(userInfo);
+    return await collection.insertOne(userInfo);
 }
 
 export async function checkExistenceOfRef(collection, ref) {

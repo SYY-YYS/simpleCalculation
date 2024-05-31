@@ -6,7 +6,7 @@ import { executeCrudOperation } from '../mongoOperation.js';
 
 router.route("/")
 .get((req, res) => {
-    executeCrudOperation();
+    executeCrudOperation("checkIdentity", true);
     res.send("enter the detailed info")
 });
 
