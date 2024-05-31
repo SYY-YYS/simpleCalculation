@@ -40,9 +40,11 @@ export async function executeCrudOperation(action, loggedin) {
                 console.log(Object.keys(backIdentity).length != 0 ? backIdentity: "identity not found")
                 break;
             case "add":
-                const backUserInfo = await createDocument(collection, 'samuel3', 'samuel123', 1.5)
+                const backUserInfo = await createDocument(collection, 'samuel5', 'samuel123', 1, 1.5, 2, 10)
                 break;
-            case "newMatch"
+            case "update":
+                await updateData(collection, 'samuel4', 1, 1.5, 2, 10)
+                break
         };
         console.log('succeeded ',action)
         
@@ -55,40 +57,64 @@ export async function executeCrudOperation(action, loggedin) {
     }
 };
 
-// for new user
-export async function createDocument(collection, username, password, timeOfCalculating, minTime) {
+// for new user (template)
+export async function createDocument(collection, username, password, timesOfCalculating, minTime, averagetime, trialnumber) {
        
     const userInfo = {
         username: username,
         password: password,
         OperationStat: {
-            {timeOfCalculating: timeOfCalculating}
-
+            [timesOfCalculating]: {
+                averagetime: averagetime,
+                mintime: minTime,
+                trialnumber: trialnumber
+            }
         },
-        averageTimeOf1Calculation: 1,
+        averageTimeOf1Calculation: averagetime,
+        TotalTrialNumber: trialnumber,
         minTime: minTime
     };
 
     return await collection.insertOne(userInfo);
-}
+};
 
-export async function checkExistenceOfRef(collection, ref) {
-    return collection.find({ref: ref}).toArray();
-}
+export async function updateData(collection, username, timesOfCalculating, minTime, averagetime, trialnumber) {
+    // check if timesOfCalculatingminTime exists
+    const checkTimesOfCalculating = await collection.find({
+        username: username,
+        OperationStat: { $exists: timesOfCalculating}
+    }).toArray();
+    console.log(Object.keys(checkTimesOfCalculating).length != 0 ?checkTimesOfCalculating : "timesOfCalculating not exists")
+    
+    if (Object.keys(checkTimesOfCalculating).length != 0) {
+        // 1: timesOfCalculatingminTime exists
+        await collection.find(
+            {username: username}
+        ).forEach(doc => {
+            collection.updateOne(
+                // averagetime, mintime, trialnumber & (total)
+            )
+            collection.save(doc)
+        });
+    } else {
+    // 2: not exists
 
-export async function findRefBySerial(collection, serial) {
-    return collection.find(
-    {serial: serial}
-    ).toArray();
-    return answer
-}
+    };
 
-export async function updateSerialByRef(collection, ref, serialA) {
-    await collection.updateMany(
-        { ref },
-        { $push: { serial: { $each: serialA}}}
-    );
-}
+};
+
+// export async function checkExistenceOfRef(collection, ref) {
+//     return collection.find({ref: ref}).toArray();
+// }
+
+// export async function findRefBySerial(collection, serial) {
+//     return collection.find(
+//     {serial: serial}
+//     ).toArray();
+//     return answer
+// }
+
+
 
 export async function deleteSerialsWRef(collection, ref, serialA) {
     await collection.updateMany(
