@@ -18,32 +18,48 @@ export async function connectToCluster(uri) {
 }
 
 
-export async function executeCrudOperation(action, ref, serial, num = 1) {
+export async function executeCrudOperation() {
     const uri = process.env.DB_URI;
     let mongoClient;
-    let doc;
 
     try {
         mongoClient = await connectToCluster(uri);
-        const db = mongoClient.db('testapi');
+        const db = mongoClient.db("testapi");
+        const collection = db.collection("userData");
+        // const collection = 
+        console.log("creating a colleciton")
 
+        // createDocument(db, 'samuel', 'samuel123', 1.5)
+        const userInfo = {
+            username: 'samuel',
+            password: 'samuel123',
+            timeOfPlaying: 1,
+            minTime: 1.5
+        };
+        const result = await db.collection("userData").insertOne(userInfo);
+
+        console.log('succeeded!')
         
-    } catch {
-        console.log('error')
+
+    } catch (error) {
+        console.log('error: ', error)
     } finally {
         await mongoClient.close();
 
     }
-}
+};
 
-export async function createRefDocument(collection, ref, serial) {
+// for new user
+export async function createDocument(collection, username, password, minTime) {
        
-    const refDocument = {
-        ref: ref,
-        serial: serial,
+    const userInfo = {
+        username: username,
+        password: password,
+        timeOfPlaying: 1,
+        minTime: minTime
     };
 
-    await collection.insertOne(refDocument);
+    await collection.insertOne(userInfo);
 }
 
 export async function checkExistenceOfRef(collection, ref) {
