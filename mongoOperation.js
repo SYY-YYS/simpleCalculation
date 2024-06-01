@@ -43,7 +43,7 @@ export async function executeCrudOperation(action, loggedin) {
                 const backUserInfo = await createDocument(collection, 'samuel6', 'samuel1236', 1, 1.5, 2, 10)
                 break;
             case "update":
-                await updateData(collection, 'samuel6', 2, 1.1, 1.9, 10)
+                await updateData(collection, 'samuel6', 3, 0.9, 1.5, 10)
                 break
         };
         console.log('succeeded ',action)
@@ -81,12 +81,13 @@ export async function createDocument(collection, username, password, timesOfCalc
 export async function updateData(collection, username, timesOfCalculating, minTime, averagetime, trialnumber) {
     // timesOfCalculating to string for dotation
     timesOfCalculating = timesOfCalculating.toString();
-    console.log(typeof(timesOfCalculating))
+    
+    let checkTimesDotnotation = `OperationStat.${timesOfCalculating}`;
 
     // check if timesOfCalculatingminTime exists
     const checkTimesOfCalculating = await collection.find({
         username: username,
-        OperationStat: { $exists: timesOfCalculating}
+        [checkTimesDotnotation]: { $exists: true}
     }).toArray();
     console.log(Object.keys(checkTimesOfCalculating).length != 0 ?checkTimesOfCalculating : "timesOfCalculating not exists")
     
@@ -103,17 +104,9 @@ export async function updateData(collection, username, timesOfCalculating, minTi
             const Ktotaltrialnumber = doc.TotalTrialNumber;
             console.log(Kaveragetime,Kmintime,Ktrialnumber,Ktotalaveragetime,Ktotaltrialnumber);
 
-            // below used updateOne() (no async function inside foreach)
-            // await collection.updateOne(
-            //     // averagetime, mintime, trialnumber & (total)
-            //     {username: username},
-            //     // first try adding trialnumber using doc
-            //     { $set: {"OperationStat.1.trialnumber" : Ktrialnumber + trialnumber}}
-            // )
-            
             return [Kaveragetime,Kmintime,Ktrialnumber,Ktotalaveragetime,Ktotaltrialnumber];
         }).toArray();
-        console.log(ThreeeKs[0])
+        
         const [Kaveragetime,Kmintime,Ktrialnumber,Ktotalaveragetime,Ktotaltrialnumber] = [...ThreeeKs[0]]
 
         // a function to lessen the variables for dotnotation
@@ -134,8 +127,8 @@ export async function updateData(collection, username, timesOfCalculating, minTi
              averageTimeOf1Calculation : caltotalaverageTime},
 
              $inc: {[addingVariableToDotNotation('trialnumber')]: trialnumber,
-             TotalTrialNumber: trialnumber
-             },
+             TotalTrialNumber: trialnumber},
+
              $min: {[addingVariableToDotNotation('mintime')]: minTime,
              minTime: minTime
              }
@@ -144,6 +137,34 @@ export async function updateData(collection, username, timesOfCalculating, minTi
     } else {
     // 2: not exists
 
+    const ThreeeKs = await collection.find(
+        {username: username}
+    ).map(async function(doc) {
+
+        const Ktotalaveragetime = doc.averageTimeOf1Calculation;
+        const Ktotaltrialnumber = doc.TotalTrialNumber;
+        console.log(Ktotalaveragetime,Ktotaltrialnumber);
+
+        return [Ktotalaveragetime,Ktotaltrialnumber];
+    }).toArray();
+    const [Ktotalaveragetime,Ktotaltrialnumber] = [...ThreeeKs[0]]
+
+    let pushingDotnotation = `OperationStat.${timesOfCalculating}`;
+    let caltotalaverageTime = (Ktotalaveragetime*Ktotaltrialnumber+averagetime*trialnumber)/(Ktotaltrialnumber + trialnumber)
+
+    await collection.updateOne(
+        {username: username},
+        { $set: {[pushingDotnotation]: {
+            averagetime: averagetime,
+            mintime: minTime,
+            trialnumber: trialnumber
+        }, averageTimeOf1Calculation : caltotalaverageTime},
+
+        $inc: {TotalTrialNumber: trialnumber},
+
+        $min: {minTime: minTime}
+        }
+    );
     };
 
 };
