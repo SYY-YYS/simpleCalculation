@@ -40,10 +40,10 @@ export async function executeCrudOperation(action, loggedin) {
                 console.log(Object.keys(backIdentity).length != 0 ? backIdentity: "identity not found")
                 break;
             case "add":
-                const backUserInfo = await createDocument(collection, 'samuel5', 'samuel123', 1, 1.5, 2, 10)
+                const backUserInfo = await createDocument(collection, 'samuel6', 'samuel1236', 1, 1.5, 2, 10)
                 break;
             case "update":
-                await updateData(collection, 'samuel4', 1, 1.5, 2, 10)
+                await updateData(collection, 'samuel6', 2, 1.1, 1.9, 10)
                 break
         };
         console.log('succeeded ',action)
@@ -79,6 +79,10 @@ export async function createDocument(collection, username, password, timesOfCalc
 };
 
 export async function updateData(collection, username, timesOfCalculating, minTime, averagetime, trialnumber) {
+    // timesOfCalculating to string for dotation
+    timesOfCalculating = timesOfCalculating.toString();
+    console.log(typeof(timesOfCalculating))
+
     // check if timesOfCalculatingminTime exists
     const checkTimesOfCalculating = await collection.find({
         username: username,
@@ -88,20 +92,63 @@ export async function updateData(collection, username, timesOfCalculating, minTi
     
     if (Object.keys(checkTimesOfCalculating).length != 0) {
         // 1: timesOfCalculatingminTime exists
-        await collection.find(
+        const ThreeeKs = await collection.find(
             {username: username}
-        ).forEach(doc => {
-            collection.updateOne(
-                // averagetime, mintime, trialnumber & (total)
-            )
-            collection.save(doc)
-        });
+        ).map(async function(doc) {
+            // console.log(doc)
+            const Kaveragetime = doc.OperationStat[timesOfCalculating].averagetime;
+            const Kmintime = doc.OperationStat[timesOfCalculating].mintime;
+            const Ktrialnumber = doc.OperationStat[timesOfCalculating].trialnumber;
+            const Ktotalaveragetime = doc.averageTimeOf1Calculation;
+            const Ktotaltrialnumber = doc.TotalTrialNumber;
+            console.log(Kaveragetime,Kmintime,Ktrialnumber,Ktotalaveragetime,Ktotaltrialnumber);
+
+            // below used updateOne() (no async function inside foreach)
+            // await collection.updateOne(
+            //     // averagetime, mintime, trialnumber & (total)
+            //     {username: username},
+            //     // first try adding trialnumber using doc
+            //     { $set: {"OperationStat.1.trialnumber" : Ktrialnumber + trialnumber}}
+            // )
+            
+            return [Kaveragetime,Kmintime,Ktrialnumber,Ktotalaveragetime,Ktotaltrialnumber];
+        }).toArray();
+        console.log(ThreeeKs[0])
+        const [Kaveragetime,Kmintime,Ktrialnumber,Ktotalaveragetime,Ktotaltrialnumber] = [...ThreeeKs[0]]
+
+        // a function to lessen the variables for dotnotation
+        function addingVariableToDotNotation(suffix) {
+            return `OperationStat.${timesOfCalculating}.${suffix}`;
+        };
+
+        // let dotaverageTime = `OperationStat.${timesOfCalculating}.averagetime`;
+
+        let calaverageTime = (Kaveragetime*Ktrialnumber+averagetime*trialnumber)/(Ktrialnumber + trialnumber)
+        let caltotalaverageTime = (Ktotalaveragetime*Ktotaltrialnumber+averagetime*trialnumber)/(Ktotaltrialnumber + trialnumber)
+        
+        await collection.updateOne(
+            
+            {username: username},
+            // first try adding trialnumber using doc
+            { $set: {[addingVariableToDotNotation('averagetime')] : calaverageTime, 
+             averageTimeOf1Calculation : caltotalaverageTime},
+
+             $inc: {[addingVariableToDotNotation('trialnumber')]: trialnumber,
+             TotalTrialNumber: trialnumber
+             },
+             $min: {[addingVariableToDotNotation('mintime')]: minTime,
+             minTime: minTime
+             }
+            }
+        )
     } else {
     // 2: not exists
 
     };
 
 };
+
+
 
 // export async function checkExistenceOfRef(collection, ref) {
 //     return collection.find({ref: ref}).toArray();
