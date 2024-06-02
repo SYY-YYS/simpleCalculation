@@ -44,7 +44,14 @@ export async function executeCrudOperation(action, loggedin) {
                 break;
             case "update":
                 await updateData(collection, 'samuel6', 3, 0.9, 1.5, 10)
-                break
+                break;
+            case "delete":
+                await deleteOneUser(collection, "samuel5")
+                break;
+            case "checkCurrentSize":
+                let collectionCount = await checkCurrentSize(collection);
+                console.log(collectionCount)
+                break;
         };
         console.log('succeeded ',action)
         
@@ -169,7 +176,13 @@ export async function updateData(collection, username, timesOfCalculating, minTi
 
 };
 
+export async function deleteOneUser(collection, username) {
+    return await collection.deleteOne({username: username});
+};
 
+export async function checkCurrentSize(collection) {
+    return await collection.count()
+}
 
 // export async function checkExistenceOfRef(collection, ref) {
 //     return collection.find({ref: ref}).toArray();
