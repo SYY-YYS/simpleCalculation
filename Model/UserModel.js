@@ -1,3 +1,4 @@
+import { Double } from "mongodb";
 import mongoose from "mongoose";
 
 
@@ -18,9 +19,21 @@ const UserSchema = new mongoose.Schema(
             type: String,
             required: true,
             max: 30
-        }       
+        },
+        OperationStat : {
+            type: Object,
+        },
+        averageTimeOf1Calculation : {
+            type: mongoose.Types.Decimal128,
+        },
+        TotalTrialNumber : {
+            type: mongoose.Types.Decimal128,
+        },
+        minTime : {
+            type: mongoose.Types.Decimal128,
+        }
 
     }
 );
 
-export default mongoose.model("Users", UserSchema);
+export default mongoose.model("userdatas", UserSchema);
