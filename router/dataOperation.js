@@ -19,10 +19,14 @@ import { executeCrudOperation } from '../mongoOperation.js';
 router.route("/")
 .get(async (req, res) => {
     // executeCrudOperation("checkCurrentSize", true);
+    console.log(req.headers)
     if (req.session.isAuth) {
-        res.send("enter the detailed info")
+        console.log("session is fine")
+        res.send("loggedin")
     } else {
-        res.redirect('/login')
+        console.log("session is failed")
+        res.send("failed")
+        // res.redirect('/login')
     }
 });
 
@@ -34,7 +38,7 @@ router.route("/firstupdate").post(async (req, res) => {
     
     const user = await updateFirstData(username, 1, 1.5,2.0,10)
     console.log(user)
-    res.redirect('/')
+    res.redirect('https://syy-yys.github.io/math-training-by-python/')
 })
 
 export async function updateFirstData(username, timesOfCalculating, minTime, averagetime, trialnumber) {

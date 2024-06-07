@@ -49,6 +49,13 @@ app.use(session({
     store: store
 }))
 
+// for allowing connection with frontend?
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "https://syy-yys.github.io/");
+    next();
+});
+
+
 // for parsing body (post method)
 app.use(express.urlencoded({extended: true}))
 app.use(cors());
@@ -58,7 +65,7 @@ app.use(function (req, res, next) {
 })
 
 
-app.use("/dataOperation", dataO);
+// app.use("/dataOperation", dataO);
 
 
 const isAuth = (req, res, next) => {
@@ -76,15 +83,40 @@ app.get("/", (req, res) => {
     res.render('index')
 })
 
-app.get("/userProfile", isAuth, (req,res) => {
-    res.render("userProfile", {username: req.session.username});
+app.get("/userProfile", isAuth, async (req,res) => {
+    const username = req.session.username;
+    const user = await UserModel.findOne({username});
+
+    res.render("userProfile", {
+        username: username,
+        mintime: user.minTime,
+        averagetime: user.averageTimeOf1Calculation,
+        totoltrialnumber: user.TotalTrialNumber
+    });
 })
 app.get("/login", (req, res) => {
-    res.render("login");
+    if(req.session.username) {
+        res.redirect("userprofile");
+    }else {
+        res.render("login");
+    }
 })
 app.get("/register", (req, res) => {
     res.render("register");
 })
+
+app.get("/dataOperation", async (req,res) => {
+    console.log(req.session)
+    if (req.session.isAuth) {
+        console.log("session is fine")
+        res.send("loggedin")
+    } else {
+        console.log("session is failed")
+        res.send("failed")
+        // res.redirect('/login')
+    }
+})
+
 app.post("/login", async (req, res) => {
     const {username, password} = req.body;
 
@@ -104,9 +136,18 @@ app.post("/login", async (req, res) => {
     req.session.isAuth = true;
     // try to set expiry time to one day
     req.session.cookie.expires = new Date(Date.now() + 3600000*24);
+    req.session.cookie.sameSite = 'lax';
     req.session.username = username;
     console.log(username, "has logged in")
-    res.redirect("/userProfile")
+    // send cookies to frontend?
+    res.cookie("id", req.session.id,{
+        httpOnly: false,
+        sameSite: 'lax',
+
+    });
+    res.redirect('https://syy-yys.github.io/math-training-by-python')
+    // res.redirect('userprofile')
+    // res.redirect("file:///C:/Users/18048/OneDrive/Desktop/GitHub/previous/react/math-training-by-python/index.html")
 })
 app.post("/register", async (req, res) => {
     const {username, email, password} = req.body;

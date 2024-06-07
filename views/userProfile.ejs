@@ -9,7 +9,10 @@
 <body>
     
     <h3>Welcome, <%=username%></h3>
-
+    <h4>Here's your current statistics</h4>
+    <p>min time of one calculation: <%=mintime%></p>
+    <p>average time of one calculation: <%=averagetime%></p>
+    <p>total number of trial sample: <%=totoltrialnumber%></p>
     <form action="/logout" method="POST">
         <button>Logout</button>
     </form>
