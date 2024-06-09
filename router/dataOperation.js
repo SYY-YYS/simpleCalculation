@@ -2,6 +2,7 @@ import express from 'express';
 // import mongoose from "mongoose";
 import UserModel from '../Model/UserModel.js';
 import session from 'express-session';
+import cors from 'cors';
 
 
 let router = express.Router();
@@ -16,10 +17,14 @@ import { executeCrudOperation } from '../mongoOperation.js';
 // });
 
 
+// router.use(cors())
+
 router.route("/")
 .get(async (req, res) => {
     // executeCrudOperation("checkCurrentSize", true);
-    console.log(req.headers)
+    console.log(req.session)
+    // res.set("Access-Control-Allow-Origin", "http://localhost:3000")
+    res.set("Access-Control-Allow-Credentials", 'true')
     if (req.session.isAuth) {
         console.log("session is fine")
         res.send("loggedin")
