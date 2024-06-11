@@ -7,8 +7,9 @@ import UserModel from './Model/UserModel.js';
 import dataO from "./router/dataOperation.js";
 import ejs from 'ejs';
 
-const app = express()
-
+const app = express();
+const clientUrl = 'http://localhost:3000'
+// const clientUrl = 'https://syy-yys.github.io/math-training-by-python'
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -51,7 +52,8 @@ app.use(session({
 
 // for allowing connection with frontend?
 app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.setHeader("Access-Control-Allow-Origin", clientUrl);
+    res.set("Access-Control-Allow-Credentials", 'true')
     next();
 });
 
@@ -118,25 +120,27 @@ app.get("/register", (req, res) => {
 // })
 
 app.post("/login", async (req, res) => {
+
+    console.log(req.body)
     const {username, password} = req.body;
 
     const user = await UserModel.findOne({username})
 
     if(!user) {
-        return res.redirect('http://localhost:3000/login');
+        return res.redirect(clientUrl + '/login');
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
 
     if(!isMatch) {
         console.log("login failed")
-        return res.redirect('http://localhost:3000/register')
+        return res.redirect(clientUrl + '/register')
     }
 
     req.session.isAuth = true;
     // try to set expiry time to one day
     req.session.cookie.expires = new Date(Date.now() + 3600000*24);
-    // req.session.cookie.sameSite = 'lax';
+    req.session.cookie.sameSite = 'lax';
     req.session.username = username;
     
     console.log(username, "has logged in")
@@ -146,7 +150,7 @@ app.post("/login", async (req, res) => {
         sameSite: 'lax',
 
     });
-    res.redirect('http://localhost:3000/mathapp')
+    res.send('loggedin')
     // res.redirect('userprofile')
     // res.redirect("file:///C:/Users/18048/OneDrive/Desktop/GitHub/previous/react/math-training-by-python/index.html")
 })
@@ -156,7 +160,7 @@ app.post("/register", async (req, res) => {
     let user = await UserModel.findOne({username});
 
     if(user) {
-        return res.redirect('http://localhost:3000/register')
+        return res.redirect(clientUrl + '/register')
     }
 
     const hashedPw = await bcrypt.hash(password, 12);
@@ -168,14 +172,17 @@ app.post("/register", async (req, res) => {
 
     await user.save();
 
-    res.redirect('http://localhost:3000/login')
+    res.redirect(clientUrl + '/login')
 })
 
 app.post("/logout", (req, res) => {
+    console.log(req.session)
     req.session.destroy((err)=>{
         if(err) throw err
-        res.redirect('/login')
+        res.set("Access-Control-Allow-Origin", "http://localhost:3000")
+        res.send('loggedout')
     })
+    // res.redirect(clientUrl + '/login')
 })
 
 

@@ -24,7 +24,7 @@ router.route("/")
     // executeCrudOperation("checkCurrentSize", true);
     console.log(req.session)
     // res.set("Access-Control-Allow-Origin", "http://localhost:3000")
-    res.set("Access-Control-Allow-Credentials", 'true')
+    // res.set("Access-Control-Allow-Credentials", 'true')
     if (req.session.isAuth) {
         console.log("session is fine")
         res.send("loggedin")
