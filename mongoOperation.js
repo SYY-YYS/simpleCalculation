@@ -23,15 +23,15 @@ export async function identityCheck(collection, username, password) {
 };
 
 
-export async function executeCrudOperation(action, loggedin) {
+export async function executeCrudOperation(action, username, timesOfCalculating, minTime, averagetime, trialnumber) {
     const uri = process.env.DB_URI;
     let mongoClient;
 
     try {
         mongoClient = await connectToCluster(uri);
         const db = mongoClient.db("testapi");
-        const collection = db.collection("userData");
-        var loggedin = loggedin
+        const collection = db.collection("userdatas");
+        // var loggedin = loggedin
         // const collection = 
         console.log("checking identity")
 
@@ -44,10 +44,10 @@ export async function executeCrudOperation(action, loggedin) {
                 const backUserInfo = await createDocument(collection, 'samuel6', 'samuel1236', 1, 1.5, 2, 10)
                 break;
             case "update":
-                await updateData(collection, 'samuel6', 3, 0.9, 1.5, 10)
+                return await updateData(collection, username, timesOfCalculating, minTime, averagetime, trialnumber)
                 break;
             case "delete":
-                await deleteOneUser(collection, "samuel5")
+                await deleteOneUser(collection, username)
                 break;
             case "checkCurrentSize":
                 let collectionCount = await checkCurrentSize(collection);
@@ -88,10 +88,10 @@ export async function createDocument(collection, username, password, timesOfCalc
 
 export async function updateData(collection, username, timesOfCalculating, minTime, averagetime, trialnumber) {
     // timesOfCalculating to string for dotation
+    console.log(timesOfCalculating, typeof(minTime), typeof(averagetime), typeof(trialnumber))
     timesOfCalculating = timesOfCalculating.toString();
     
     let checkTimesDotnotation = `OperationStat.${timesOfCalculating}`;
-
     // check if timesOfCalculatingminTime exists
     const checkTimesOfCalculating = await collection.find({
         username: username,
@@ -155,6 +155,8 @@ export async function updateData(collection, username, timesOfCalculating, minTi
 
         return [Ktotalaveragetime,Ktotaltrialnumber];
     }).toArray();
+
+    console.log(ThreeeKs)
     const [Ktotalaveragetime,Ktotaltrialnumber] = [...ThreeeKs[0]]
 
     let pushingDotnotation = `OperationStat.${timesOfCalculating}`;

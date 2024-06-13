@@ -2,7 +2,7 @@ import express from 'express';
 // import mongoose from "mongoose";
 import UserModel from '../Model/UserModel.js';
 import session from 'express-session';
-import cors from 'cors';
+
 
 
 let router = express.Router();
@@ -37,13 +37,25 @@ router.route("/")
 
 // Logic:
 // set a updateFirstData
-router.route("/firstupdate").post(async (req, res) => {
+router.route("/update").post(async (req, res) => {
+    const {timesOfCalculating, minTime, averagetime, trialnumber} = req.body;
     const username = req.session.username;
-    // const {timesOfCalculating, minTime, averagetime, trialnumber} = req.body;
-    
-    const user = await updateFirstData(username, 1, 1.5,2.0,10)
-    console.log(user)
-    res.redirect('https://syy-yys.github.io/math-training-by-python/')
+    console.log(timesOfCalculating, minTime, averagetime, trialnumber, username)
+
+    const userCheck = await UserModel.findOne(
+        {username: username,
+        OperationStat : {$exists : true}}
+    )
+    if (userCheck) {
+        const user = await executeCrudOperation('update', username, timesOfCalculating, parseFloat(minTime),parseFloat(averagetime),parseFloat(trialnumber))
+        console.log(user)
+        res.json(user)
+    } else {
+        console.log('welcome new user')
+        const user = await updateFirstData(username, timesOfCalculating, parseFloat(minTime), parseFloat(averagetime), parseFloat(trialnumber))
+        console.log(user)
+        res.json(user)
+    }
 })
 
 export async function updateFirstData(username, timesOfCalculating, minTime, averagetime, trialnumber) {

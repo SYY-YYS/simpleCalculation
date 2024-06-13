@@ -7,6 +7,8 @@ import UserModel from './Model/UserModel.js';
 import dataO from "./router/dataOperation.js";
 import ejs from 'ejs';
 
+import assert from 'assert'
+
 const app = express();
 const clientUrl = 'http://localhost:3000'
 // const clientUrl = 'https://syy-yys.github.io/math-training-by-python'
@@ -98,11 +100,12 @@ app.get("/userProfile", isAuth, async (req,res) => {
 })
 app.get("/login", (req, res) => {
     if(req.session.username) {
-        res.redirect("userprofile");
+        res.send(true);
     }else {
-        res.render("login");
+        res.send(false);
     }
-})
+});
+
 app.get("/register", (req, res) => {
     res.render("register");
 })
@@ -160,8 +163,17 @@ app.post("/register", async (req, res) => {
     let user = await UserModel.findOne({username});
 
     if(user) {
-        return res.redirect(clientUrl + '/register')
+        return res.send('username was taken!')
     }
+    console.log(email)
+    let checkEmail = await UserModel.findOne({email: email});
+    console.log(checkEmail)
+
+    if(checkEmail) {
+        return res.send('email was taken!')
+    }
+
+
 
     const hashedPw = await bcrypt.hash(password, 12);
     user = new UserModel({
@@ -170,9 +182,28 @@ app.post("/register", async (req, res) => {
         password: hashedPw
     });
 
-    await user.save();
 
-    res.redirect(clientUrl + '/login')
+    // const error = user.validateSync();
+    // assert.equal(error.errors['email'].message, '')
+
+    await user.save()
+    .then(savedUser => {
+        console.log(savedUser)
+        res.send("registered!")
+    }).catch((err) => {
+        console.log(err)
+    })
+
+    // UserModel.init()
+    // .then(()=>UserModel.create(user))
+    // .catch(err => {
+    //     assert.ok(err);
+    //     assert.ok(!err.errors);
+    //     assert.ok(err.message.indexOf('duplicate key error') !== -1)
+    // })
+
+
+    
 })
 
 app.post("/logout", (req, res) => {
