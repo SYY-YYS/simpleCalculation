@@ -154,13 +154,14 @@ app.post("/login", async (req, res) => {
     req.session.cookie.expires = new Date(Date.now() + 3600000*24);
     req.session.cookie.sameSite = 'none';
     req.session.username = username;
+    req.session.cookie.secure = true
     
     console.log(username, "has logged in")
     // send cookies to frontend?
     res.cookie("id", req.session.id,{
         httpOnly: false,
         sameSite: 'none',
-
+        secure: true
     });
     res.send('loggedin')
     // res.redirect('userprofile')
