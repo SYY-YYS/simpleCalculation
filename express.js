@@ -152,14 +152,14 @@ app.post("/login", async (req, res) => {
     req.session.isAuth = true;
     // try to set expiry time to one day
     req.session.cookie.expires = new Date(Date.now() + 3600000*24);
-    req.session.cookie.sameSite = 'lax';
+    req.session.cookie.sameSite = 'none';
     req.session.username = username;
     
     console.log(username, "has logged in")
     // send cookies to frontend?
     res.cookie("id", req.session.id,{
         httpOnly: false,
-        sameSite: 'lax',
+        sameSite: 'none',
 
     });
     res.send('loggedin')
