@@ -10,12 +10,13 @@ import ejs from 'ejs';
 import assert from 'assert'
 
 const app = express();
-const clientUrl = 'http://localhost:3000'
+
 // const clientUrl = 'https://syy-yys.github.io/math-training-by-python'
 
 import dotenv from 'dotenv';
 dotenv.config();
 
+const clientUrl = process.env.Client_URL;
 
 
 // session for cookies
@@ -89,18 +90,26 @@ app.get("/", (req, res) => {
 
 app.get("/userProfile", isAuth, async (req,res) => {
     const username = req.session.username;
-    const user = await UserModel.findOne({username});
+    const user = await UserModel.findOne({username})
 
-    res.render("userProfile", {
+    // const sendingData = [
+    //     username,
+    //     user.minTime,
+    //     user.averageTimeOf1Calculation,
+    //     user.TotalTrialNumber
+    // ]
+    
+    const sendingData = {
         username: username,
-        mintime: user.minTime,
-        averagetime: user.averageTimeOf1Calculation,
-        totoltrialnumber: user.TotalTrialNumber
-    });
+        mintime: parseFloat(user.minTime.toJSON()["$numberDecimal"]),
+        averagetime: parseFloat(user.averageTimeOf1Calculation.toJSON()["$numberDecimal"]),
+        totaltrialnumber: parseFloat(user.TotalTrialNumber.toJSON()["$numberDecimal"])
+    };
+    res.send(sendingData);
 })
 app.get("/login", (req, res) => {
-    if(req.session.username) {
-        res.send(true);
+    if(req.session.isAuth) {
+        res.send(req.session.username);
     }else {
         res.send(false);
     }

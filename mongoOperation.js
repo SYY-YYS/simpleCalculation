@@ -88,7 +88,7 @@ export async function createDocument(collection, username, password, timesOfCalc
 
 export async function updateData(collection, username, timesOfCalculating, minTime, averagetime, trialnumber) {
     // timesOfCalculating to string for dotation
-    console.log(timesOfCalculating, typeof(minTime), typeof(averagetime), typeof(trialnumber))
+    // console.log(timesOfCalculating, typeof(minTime), typeof(averagetime), typeof(trialnumber))
     timesOfCalculating = timesOfCalculating.toString();
     
     let checkTimesDotnotation = `OperationStat.${timesOfCalculating}`;
