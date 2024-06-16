@@ -160,7 +160,7 @@ export async function updateData(collection, username, timesOfCalculating, minTi
     const [Ktotalaveragetime,Ktotaltrialnumber] = [...ThreeeKs[0]]
 
     let pushingDotnotation = `OperationStat.${timesOfCalculating}`;
-    let caltotalaverageTime = (Ktotalaveragetime*Ktotaltrialnumber+averagetime*trialnumber)/(Ktotaltrialnumber + trialnumber)
+    let caltotalaverageTime = (Ktotaltrialnumber)?(Ktotalaveragetime*Ktotaltrialnumber+averagetime*trialnumber)/(Ktotaltrialnumber + trialnumber): averagetime
 
     await collection.updateOne(
         {username: username},
