@@ -46,12 +46,26 @@ import bcrypt from 'bcrypt';
 
 app.set("view engine", "ejs")
 
+app.set('trust proxy', 1)
+
+// app.use(cors({
+//     credentials: true,
+// }))
+
 app.use(session({
     secret: "sign cookie",
     resave: false,
     saveUninitialized: false,
-    store: store
+    store: store,
+    cookie: {
+        secure: true,
+        sameSite: 'none',
+        // partitioned: true,
+        httpOnly: true,
+        // domain: 'localhost'
+    }
 }))
+
 
 // for allowing connection with frontend?
 app.use((req, res, next) => {
@@ -108,6 +122,7 @@ app.get("/userProfile", isAuth, async (req,res) => {
     res.send(sendingData);
 })
 app.get("/login", (req, res) => {
+    console.log(req.session)
     if(req.session.isAuth) {
         res.send(req.session.username);
     }else {
@@ -148,21 +163,26 @@ app.post("/login", async (req, res) => {
         console.log("login failed")
         return res.redirect(clientUrl + '/register')
     }
+    
 
     req.session.isAuth = true;
     // try to set expiry time to one day
     req.session.cookie.expires = new Date(Date.now() + 3600000*24);
-    req.session.cookie.sameSite = 'none';
+    // req.session.cookie.sameSite = 'none';
+    // req.session.cookie.httpOnly = false;
+    // req.session.cookie.secure = true;
+    // google new policy: partitioned
+    // req.session.cookie.partitioned = true;
     req.session.username = username;
-    req.session.cookie.secure = true
     
-    console.log(username, "has logged in")
+    console.log(username, "has logged in", req.session)
     // send cookies to frontend?
-    res.cookie("id", req.session.id,{
-        httpOnly: false,
-        sameSite: 'none',
-        secure: true
-    });
+    // res.cookie("id", req.session.id,{
+    //     httpOnly: false,
+    //     sameSite: 'none',
+    //     secure: true,
+    //     partitioned: true
+    // });
     res.send('loggedin')
     // res.redirect('userprofile')
     // res.redirect("file:///C:/Users/18048/OneDrive/Desktop/GitHub/previous/react/math-training-by-python/index.html")
