@@ -69,7 +69,7 @@ app.use(session({
 
 // for allowing connection with frontend?
 app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", clientUrl);
+    res.setHeader("Access-Control-Allow-Origin", process.env.cors_domain);
     res.set("Access-Control-Allow-Credentials", 'true')
     next();
 });
