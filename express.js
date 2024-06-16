@@ -60,7 +60,7 @@ app.use(session({
     cookie: {
         secure: true,
         sameSite: 'none',
-        // partitioned: true,
+        partitioned: true,
         httpOnly: true,
         // domain: 'localhost'
     }
