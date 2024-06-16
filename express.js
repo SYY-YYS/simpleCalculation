@@ -18,6 +18,8 @@ dotenv.config();
 
 const clientUrl = process.env.Client_URL;
 
+const clientDomain = process.env.cors_domain;
+
 
 // session for cookies
 import session from 'express-session';
@@ -69,7 +71,7 @@ app.use(session({
 
 // for allowing connection with frontend?
 app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", process.env.cors_domain);
+    res.setHeader("Access-Control-Allow-Origin", clientDomain);
     res.set("Access-Control-Allow-Credentials", 'true')
     next();
 });
@@ -240,7 +242,7 @@ app.post("/logout", (req, res) => {
     console.log(req.session)
     req.session.destroy((err)=>{
         if(err) throw err
-        res.set("Access-Control-Allow-Origin", "http://localhost:3000")
+        res.set("Access-Control-Allow-Origin", clientDomain)
         res.send('loggedout')
     })
     // res.redirect(clientUrl + '/login')
