@@ -49,12 +49,14 @@ router.route("/update").post(async (req, res) => {
     if (userCheck) {
         const user = await executeCrudOperation('update', username, timesOfCalculating, parseFloat(minTime),parseFloat(averagetime),parseFloat(trialnumber))
         console.log(user)
-        res.json(user)
+        res.send('updated')
+        // res.json(user)
     } else {
         console.log('welcome new user')
         const user = await updateFirstData(username, timesOfCalculating, parseFloat(minTime), parseFloat(averagetime), parseFloat(trialnumber))
         console.log(user)
-        res.json(user)
+        res.send('updated')
+        // res.json(user)
     }
 })
 

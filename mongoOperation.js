@@ -127,7 +127,7 @@ export async function updateData(collection, username, timesOfCalculating, minTi
         let calaverageTime = (Kaveragetime*Ktrialnumber+averagetime*trialnumber)/(Ktrialnumber + trialnumber)
         let caltotalaverageTime = (Ktotalaveragetime*Ktotaltrialnumber+averagetime*trialnumber)/(Ktotaltrialnumber + trialnumber)
         
-        await collection.updateOne(
+        return await collection.updateOne(
             
             {username: username},
             // first try adding trialnumber using doc
