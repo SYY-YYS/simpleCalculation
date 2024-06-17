@@ -63,7 +63,7 @@ app.use(session({
         // secure: true,
         sameSite: 'lax',
         // partitioned: true,
-        httpOnly: true,
+        // httpOnly: true,
         maxAge: 3600000*24
     }
 }))
