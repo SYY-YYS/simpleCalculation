@@ -64,7 +64,7 @@ app.use(session({
         sameSite: 'none',
         partitioned: true,
         httpOnly: true,
-        // domain: 'localhost'
+        maxAge: 3600000*24
     }
 }))
 
@@ -156,20 +156,23 @@ app.post("/login", async (req, res) => {
     const user = await UserModel.findOne({username})
 
     if(!user) {
-        return res.redirect(clientUrl + '/login');
+        // return res.redirect(clientUrl + '/login');
+        console.log(username + "not existed")
+        return res.send('username not found')
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
 
     if(!isMatch) {
-        console.log("login failed")
-        return res.redirect(clientUrl + '/register')
+        console.log(username + "login failed")
+        // return res.redirect(clientUrl + '/register')
+        return res.send("wrong password")
     }
     
 
     req.session.isAuth = true;
     // try to set expiry time to one day
-    req.session.cookie.expires = new Date(Date.now() + 3600000*24);
+    // req.session.cookie.expires = new Date(Date.now() + 3600000*24);
     // req.session.cookie.sameSite = 'none';
     // req.session.cookie.httpOnly = false;
     // req.session.cookie.secure = true;
@@ -177,7 +180,7 @@ app.post("/login", async (req, res) => {
     // req.session.cookie.partitioned = true;
     req.session.username = username;
     
-    console.log(username, "has logged in", req.session)
+    console.log(username, "has logged in")
     // send cookies to frontend?
     // res.cookie("id", req.session.id,{
     //     httpOnly: false,
