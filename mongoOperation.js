@@ -159,10 +159,15 @@ export async function updateData(collection, username, timesOfCalculating, minTi
     console.log(ThreeeKs)
     const [Ktotalaveragetime,Ktotaltrialnumber] = [...ThreeeKs[0]]
 
+    Ktotalaveragetime = (typeof(Ktotalaveragetime)==='object')? parseFloat(Ktotalaveragetime.toJSON()["$numberDecimal"]):Ktotalaveragetime;
+    Ktotaltrialnumber = (typeof(Ktotaltrialnumber)==='object')? parseFloat(Ktotaltrialnumber.toJSON()["$numberDecimal"]):Ktotaltrialnumber;
+
+    console.log(Ktotalaveragetime,Ktotaltrialnumber)
+
     let pushingDotnotation = `OperationStat.${timesOfCalculating}`;
     let caltotalaverageTime = (Ktotalaveragetime*Ktotaltrialnumber+averagetime*trialnumber)/(Ktotaltrialnumber + trialnumber)
 
-    await collection.updateOne(
+    return await collection.updateOne(
         {username: username},
         { $set: {[pushingDotnotation]: {
             averagetime: averagetime,
