@@ -140,8 +140,8 @@ export async function updateData(collection, username, timesOfCalculating, minTi
             
             {username: username},
             // first try adding trialnumber using doc
-            { $set: {[addingVariableToDotNotation('averagetime')] : calaverageTime, 
-             averageTimeOf1Calculation : caltotalaverageTime},
+            { $set: {[addingVariableToDotNotation('averagetime')] : Math.floor(calaverageTime*1000)/1000, 
+             averageTimeOf1Calculation : Math.floor(caltotalaverageTime*1000)/1000},
 
              $inc: {[addingVariableToDotNotation('trialnumber')]: trialnumber,
              TotalTrialNumber: trialnumber},
@@ -182,7 +182,7 @@ export async function updateData(collection, username, timesOfCalculating, minTi
             averagetime: averagetime,
             mintime: minTime,
             trialnumber: trialnumber
-        }, averageTimeOf1Calculation : caltotalaverageTime},
+        }, averageTimeOf1Calculation : Math.floor(caltotalaverageTime*1000)/1000},
 
         $inc: {TotalTrialNumber: trialnumber},
 
