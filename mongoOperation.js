@@ -115,7 +115,16 @@ export async function updateData(collection, username, timesOfCalculating, minTi
             return [Kaveragetime,Kmintime,Ktrialnumber,Ktotalaveragetime,Ktotaltrialnumber];
         }).toArray();
         
-        const [Kaveragetime,Kmintime,Ktrialnumber,Ktotalaveragetime,Ktotaltrialnumber] = [...ThreeeKs[0]]
+        let [Kaveragetime,Kmintime,Ktrialnumber,Ktotalaveragetime,Ktotaltrialnumber] = [...ThreeeKs[0]]
+
+        Ktotalaveragetime = (typeof(Ktotalaveragetime)==='object')? parseFloat(Ktotalaveragetime.toJSON()["$numberDecimal"]):Ktotalaveragetime;
+        Ktotaltrialnumber = (typeof(Ktotaltrialnumber)==='object')? parseFloat(Ktotaltrialnumber.toJSON()["$numberDecimal"]):Ktotaltrialnumber;
+
+        Kaveragetime = (typeof(Kaveragetime)==='object')? parseFloat(Kaveragetime.toJSON()["$numberDecimal"]):Kaveragetime;
+        Ktrialnumber = (typeof(Ktrialnumber)==='object')? parseFloat(Ktrialnumber.toJSON()["$numberDecimal"]):Ktrialnumber;
+
+
+
 
         // a function to lessen the variables for dotnotation
         function addingVariableToDotNotation(suffix) {
@@ -157,7 +166,7 @@ export async function updateData(collection, username, timesOfCalculating, minTi
     }).toArray();
 
     console.log(ThreeeKs)
-    const [Ktotalaveragetime,Ktotaltrialnumber] = [...ThreeeKs[0]]
+    let [Ktotalaveragetime,Ktotaltrialnumber] = [...ThreeeKs[0]]
 
     Ktotalaveragetime = (typeof(Ktotalaveragetime)==='object')? parseFloat(Ktotalaveragetime.toJSON()["$numberDecimal"]):Ktotalaveragetime;
     Ktotaltrialnumber = (typeof(Ktotaltrialnumber)==='object')? parseFloat(Ktotaltrialnumber.toJSON()["$numberDecimal"]):Ktotaltrialnumber;
