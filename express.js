@@ -60,8 +60,8 @@ app.use(session({
     saveUninitialized: false,
     store: store,
     cookie: {
-        // secure: true,
-        sameSite: 'none',
+        secure: true,
+        sameSite: 'lax',
         partitioned: true,
         httpOnly: true,
         maxAge: 3600000*24
