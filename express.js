@@ -60,7 +60,7 @@ app.use(session({
     saveUninitialized: false,
     store: store,
     cookie: {
-        secure: true,
+        secure: true, 
         sameSite: 'none',
         partitioned: true,
         httpOnly: true,
