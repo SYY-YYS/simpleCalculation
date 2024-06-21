@@ -19,6 +19,7 @@
     "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+    "express-useragent": "^1.0.15",
     "express-validator": "^7.1.0",
     "mongodb": "^6.7.0",
     "mongoose": "^8.4.1",

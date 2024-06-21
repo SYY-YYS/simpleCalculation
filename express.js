@@ -55,7 +55,7 @@ app.set('trust proxy', 1)
 // }))
 
 app.use(session({
-    secret: "sign cookie",
+    secret: process.env.SESSION_KEY,
     resave: false,
     saveUninitialized: false,
     store: store,
@@ -67,6 +67,10 @@ app.use(session({
         maxAge: 3600000*24
     }
 }))
+
+import useragent from 'express-useragent';
+
+app.use(useragent.express())
 
 
 // for allowing connection with frontend?
@@ -151,6 +155,7 @@ app.get("/register", (req, res) => {
 app.post("/login", async (req, res) => {
 
     console.log(req.body)
+    console.log(req.useragent.os)
     const {username, password} = req.body;
 
     const user = await UserModel.findOne({username})
