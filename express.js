@@ -7,7 +7,6 @@ import UserModel from './Model/UserModel.js';
 import dataO from "./router/dataOperation.js";
 import ejs from 'ejs';
 
-import assert from 'assert'
 import jwt from 'jsonwebtoken'
 import cookies from 'cookie-parser'
 
@@ -31,6 +30,8 @@ let MongoSession = MongoDBSession(session);
 
 // tried a new uri for mongoose
 const uri = process.env.Mongoose_URI;
+
+const jwtSecret = process.env.JWT_SECRET;
 
 const store = new MongoSession({
     uri: uri,
@@ -69,6 +70,12 @@ app.use(session({
         maxAge: 3600000*24
     }
 }))
+
+import useragent from 'express-useragent';
+
+app.use(useragent.express())
+
+app.use(cookies())
 
 
 // for allowing connection with frontend?
@@ -126,10 +133,23 @@ app.get("/userProfile", isAuth, async (req,res) => {
     res.send(sendingData);
 })
 app.get("/login", (req, res) => {
-    console.log(req.session)
-    if(req.session.isAuth) {
-        res.send(req.session.username);
-    }else {
+    console.log(req.session, req.cookies)
+    const token = req.cookies.token;
+    
+    if (req.session.isAuth) return res.send(true)
+
+    console.log(token)
+    if (token) {
+        const decoded = jwt.verify(token, jwtSecret)
+        console.log(decoded)
+        // check if expires
+        if (decoded.exp < Date.now()/1000){
+            res.send('token expired')
+        } else {
+            console.log(decoded.exp - Date.now()/1000)
+            res.send(decoded.user)
+        }
+    } else {
         res.send(false);
     }
 });
@@ -173,14 +193,14 @@ app.post("/login", async (req, res) => {
     
 
     req.session.isAuth = true;
-    // try to set expiry time to one day
-    // req.session.cookie.expires = new Date(Date.now() + 3600000*24);
-    // req.session.cookie.sameSite = 'none';
-    // req.session.cookie.httpOnly = false;
-    // req.session.cookie.secure = true;
-    // google new policy: partitioned
-    // req.session.cookie.partitioned = true;
     req.session.username = username;
+
+    // below try JWT
+    const signingData = {
+        user: user.username
+    }
+    
+    const token = jwt.sign(signingData, jwtSecret, {expiresIn: 1000*60*60})
     
     console.log(username, "has logged in")
     // send cookies to frontend?
@@ -190,6 +210,15 @@ app.post("/login", async (req, res) => {
     //     secure: true,
     //     partitioned: true
     // });
+
+    res.cookie('token', token, {
+        maxAge: 1000*60*15, 
+        httpOnly: true,
+        // secure: true,
+        sameSite: 'lax'
+    })
+
+
     res.send('loggedin')
     // res.redirect('userprofile')
     // res.redirect("file:///C:/Users/18048/OneDrive/Desktop/GitHub/previous/react/math-training-by-python/index.html")
@@ -245,6 +274,7 @@ app.post("/register", async (req, res) => {
 
 app.post("/logout", (req, res) => {
     console.log(req.session)
+    // actually can send one more cookie as indicator of logout..
     req.session.destroy((err)=>{
         if(err) throw err
         res.set("Access-Control-Allow-Origin", clientDomain)
