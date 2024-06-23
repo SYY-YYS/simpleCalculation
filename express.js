@@ -8,6 +8,8 @@ import dataO from "./router/dataOperation.js";
 import ejs from 'ejs';
 
 import assert from 'assert'
+import jwt from 'jsonwebtoken'
+import cookies from 'cookie-parser'
 
 const app = express();
 
@@ -55,7 +57,7 @@ app.set('trust proxy', 1)
 // }))
 
 app.use(session({
-    secret: "sign cookie",
+    secret: process.env.SESSION_KEY,
     resave: false,
     saveUninitialized: false,
     store: store,
