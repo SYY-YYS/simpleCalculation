@@ -214,8 +214,9 @@ app.post("/login", async (req, res) => {
     res.cookie('token', token, {
         maxAge: 1000*60*15, 
         httpOnly: true,
-        // secure: true,
-        sameSite: 'lax'
+        secure: true,
+        sameSite: 'none',
+        partitioned: true
     })
 
 
