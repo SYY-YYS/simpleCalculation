@@ -120,7 +120,7 @@ app.get("/", (req, res) => {
 })
 
 app.get("/userProfile", async (req,res) => {
-    const username = req.session.username;
+    let username = req.session.username;
     // const user = username? await UserModel.findOne({username}):undefined
 
     if (username) {

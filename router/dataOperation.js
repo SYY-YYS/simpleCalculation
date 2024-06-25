@@ -39,7 +39,7 @@ router.route("/")
 // set a updateFirstData
 router.route("/update").post(async (req, res) => {
     const {timesOfCalculating, minTime, averagetime, trialnumber} = req.body;
-    const username = req.session.username;
+    let username = req.session.username;
     console.log(timesOfCalculating, minTime, averagetime, trialnumber, username)
 
     // check localstorage token user after checking cookie
