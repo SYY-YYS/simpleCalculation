@@ -121,10 +121,10 @@ app.get("/", (req, res) => {
 
 app.get("/userProfile", async (req,res) => {
     const username = req.session.username;
-    const user = username? await UserModel.findOne({username}):undefined
+    // const user = username? await UserModel.findOne({username}):undefined
 
-    if (user) {
-        await UserModel.findOne({username})
+    if (username) {
+        const user = await UserModel.findOne({username})
     } else {
         const token =req.header("Authorization") ? req.header("Authorization").split(" ")[1]:'null'
         // console.log(token)
@@ -136,7 +136,8 @@ app.get("/userProfile", async (req,res) => {
                 res.status(403).send('token expired')
             } else {
                 console.log(decoded.exp - Date.now()/1000)
-                user = decoded.user
+                username = decoded.user
+                const user = await UserModel.findOne({username})
             }
         } else {
             res.status(401).send(false);
