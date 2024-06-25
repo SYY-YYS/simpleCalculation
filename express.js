@@ -121,11 +121,9 @@ app.get("/", (req, res) => {
 
 app.get("/userProfile", async (req,res) => {
     let username = req.session.username;
-    // const user = username? await UserModel.findOne({username}):undefined
+    let user = username? await UserModel.findOne({username}):undefined
 
-    if (username) {
-        const user = await UserModel.findOne({username})
-    } else {
+    if (!username) {
         const token =req.header("Authorization") ? req.header("Authorization").split(" ")[1]:'null'
         // console.log(token)
         if (token !== "null") {
@@ -137,7 +135,7 @@ app.get("/userProfile", async (req,res) => {
             } else {
                 console.log(decoded.exp - Date.now()/1000)
                 username = decoded.user
-                const user = await UserModel.findOne({username})
+                user = await UserModel.findOne({username})
             }
         } else {
             res.status(401).send(false);
