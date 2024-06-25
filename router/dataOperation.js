@@ -42,6 +42,25 @@ router.route("/update").post(async (req, res) => {
     const username = req.session.username;
     console.log(timesOfCalculating, minTime, averagetime, trialnumber, username)
 
+    // check localstorage token user after checking cookie
+    if(!username) {
+        const token =req.header("Authorization") ? req.header("Authorization").split(" ")[1]:'null'
+        // console.log(token)
+        if (token !== "null") {
+            const decoded = jwt.verify(token, jwtSecret)
+            console.log(decoded)
+            // check if expires
+            if (decoded.exp < Date.now()/1000){
+                res.status(403).send('token expired')
+            } else {
+                console.log(decoded.exp - Date.now()/1000)
+                username = decoded.user
+            }
+        } else {
+            res.status(401).send(false);
+        }
+    }
+
     const userCheck = await UserModel.findOne(
         {username: username,
         OperationStat : {$exists : true}}

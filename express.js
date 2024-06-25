@@ -119,16 +119,31 @@ app.get("/", (req, res) => {
     res.render('index')
 })
 
-app.get("/userProfile", isAuth, async (req,res) => {
+app.get("/userProfile", async (req,res) => {
     const username = req.session.username;
-    const user = await UserModel.findOne({username})
+    const user = username? await UserModel.findOne({username}):undefined
 
-    // const sendingData = [
-    //     username,
-    //     user.minTime,
-    //     user.averageTimeOf1Calculation,
-    //     user.TotalTrialNumber
-    // ]
+    if (user) {
+        await UserModel.findOne({username})
+    } else {
+        const token =req.header("Authorization") ? req.header("Authorization").split(" ")[1]:'null'
+        // console.log(token)
+        if (token !== "null") {
+            const decoded = jwt.verify(token, jwtSecret)
+            console.log(decoded)
+            // check if expires
+            if (decoded.exp < Date.now()/1000){
+                res.status(403).send('token expired')
+            } else {
+                console.log(decoded.exp - Date.now()/1000)
+                user = decoded.user
+            }
+        } else {
+            res.status(401).send(false);
+        }
+    }
+
+    
     
     const sendingData = {
         username: username,
