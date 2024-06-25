@@ -5,6 +5,8 @@ import session from 'express-session';
 
 import jwt from 'jsonwebtoken'
 
+const jwtSecret = process.env.JWT_SECRET;
+
 let router = express.Router();
 
 import { executeCrudOperation } from '../mongoOperation.js';
