@@ -3,7 +3,7 @@ import express from 'express';
 import UserModel from '../Model/UserModel.js';
 import session from 'express-session';
 
-
+import jwt from 'jsonwebtoken'
 
 let router = express.Router();
 
