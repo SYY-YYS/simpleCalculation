@@ -10,9 +10,14 @@ import ejs from 'ejs';
 import jwt from 'jsonwebtoken'
 import cookies from 'cookie-parser'
 
+
+
 const app = express();
 
 // const clientUrl = 'https://syy-yys.github.io/math-training-by-python'
+
+// import { LocalStorage } from 'node-localstorage';
+// localStorage = new LocalStorage()
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -81,7 +86,8 @@ app.use(cookies())
 // for allowing connection with frontend?
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", clientDomain);
-    res.set("Access-Control-Allow-Credentials", 'true')
+    res.set("Access-Control-Allow-Credentials", 'true');
+    res.set("Access-Control-Allow-Headers", 'Authorization')
     next();
 });
 
@@ -134,12 +140,13 @@ app.get("/userProfile", isAuth, async (req,res) => {
 })
 app.get("/login", (req, res) => {
     console.log(req.session, req.cookies)
-    const token = req.cookies.token;
+    // const token = req.cookies.token;
     
     if (req.session.isAuth) return res.send(true)
 
+    const token = req.header("Authorization").split(" ")[1]
     console.log(token)
-    if (token) {
+    if (token !== "null") {
         const decoded = jwt.verify(token, jwtSecret)
         console.log(decoded)
         // check if expires
@@ -180,7 +187,7 @@ app.post("/login", async (req, res) => {
     if(!user) {
         // return res.redirect(clientUrl + '/login');
         console.log(username + "not existed")
-        return res.send('username not found')
+        return res.status(403).send('username not found')
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
@@ -188,21 +195,32 @@ app.post("/login", async (req, res) => {
     if(!isMatch) {
         console.log(username + "login failed")
         // return res.redirect(clientUrl + '/register')
-        return res.send("wrong password")
+        return res.status(403).send("wrong password")
     }
     
 
     req.session.isAuth = true;
     req.session.username = username;
 
+    console.log(username, "has logged in")
+
     // below try JWT
     const signingData = {
         user: user.username
     }
-    
     const token = jwt.sign(signingData, jwtSecret, {expiresIn: 1000*60*60})
+
+    // if user is ios, then send jwt and let react set it
+    if(req.useragent.os.includes("ios")) {
+        console.log("ios login")
+        res.send(token)
+    } else {
+        console.log("non ios")
+        res.send('loggedin')
+    }
     
-    console.log(username, "has logged in")
+    
+    
     // send cookies to frontend?
     // res.cookie("id", req.session.id,{
     //     httpOnly: false,
@@ -211,16 +229,16 @@ app.post("/login", async (req, res) => {
     //     partitioned: true
     // });
 
-    res.cookie('token', token, {
-        maxAge: 1000*60*15, 
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        partitioned: true
-    })
+    // res.cookie('token', token, {
+    //     maxAge: 1000*60*15, 
+    //     httpOnly: true,
+    //     secure: true,
+    //     sameSite: 'none',
+    //     partitioned: true
+    // })
 
 
-    res.send('loggedin')
+    
     // res.redirect('userprofile')
     // res.redirect("file:///C:/Users/18048/OneDrive/Desktop/GitHub/previous/react/math-training-by-python/index.html")
 })
