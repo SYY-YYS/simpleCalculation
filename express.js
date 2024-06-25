@@ -96,7 +96,7 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({extended: true}))
 // app.use(cors());
 app.use(function (req, res, next) {
-    console.log(req.ip, Date.now())
+    console.log(req.ip,req.useragent.os, Date.now())
     next();
 })
 
@@ -212,7 +212,7 @@ app.post("/login", async (req, res) => {
     const token = jwt.sign(signingData, jwtSecret, {expiresIn: 1000*60*60})
 
     // if user is ios, then send jwt and let react set it
-    if(req.useragent.os.includes("ios")) {
+    if(req.useragent.os.includes("OS X")) {
         console.log("ios login")
         res.send(token)
     } else {
