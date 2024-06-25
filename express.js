@@ -144,7 +144,7 @@ app.get("/login", (req, res) => {
     
     if (req.session.isAuth) return res.send(true)
 
-    const token = req.header("Authorization").split(" ")[1]
+    const token =req.header("Authorization") ? req.header("Authorization").split(" ")[1]:'null'
     console.log(token)
     if (token !== "null") {
         const decoded = jwt.verify(token, jwtSecret)
@@ -203,6 +203,7 @@ app.post("/login", async (req, res) => {
     req.session.username = username;
 
     console.log(username, "has logged in")
+    console.log(req.useragent.os)
 
     // below try JWT
     const signingData = {
