@@ -97,7 +97,7 @@ app.use(cookies())
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", clientDomain);
     res.set("Access-Control-Allow-Credentials", 'true')
-    res.set("Access-Control-Allow-Headers", clientDomain)
+    res.set("Access-Control-Allow-Headers", 'Authorization')
     next();
 });
 
@@ -133,6 +133,7 @@ app.get('/oauth2/redirect/google',
     function(req, res) {
       res.redirect('/');
     });
+
 
 app.get("/", (req, res) => {
     // executeCrudOperation();

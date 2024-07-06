@@ -10,14 +10,21 @@ passport.use(
         {
             clientID: process.env.Client_ID,
             clientSecret: process.env.Client_SECRET,
-            callbackURL: '/auth/google/callback',
+            callbackURL: '/oauth2/redirect/google',
             scope: ["profile", "email"],
         },
         function verify(accessToken, refreshToken, profile, callback) {
-            callback(null, profile)
+            console.log(profile)
+            return callback(null, profile)
         }
     )
 )
 
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+passport.deserializeUser((obj, done) => {
+    done(null, obj);
+});
 
 export default passport;
