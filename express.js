@@ -11,6 +11,11 @@ import jwt from 'jsonwebtoken'
 import cookies from 'cookie-parser'
 
 
+import passport from 'passport';
+// import authRoute from './router/auth.js'
+
+
+
 
 import assert from 'assert'
 
@@ -49,6 +54,8 @@ mongoose.connect(uri).then((res) => {
     console.log("MongoDB connected by mongoose.")
 });
 
+import passportSetup from './passport.js'
+
 
 // password hashing
 import bcrypt from 'bcrypt';
@@ -60,6 +67,8 @@ app.set('trust proxy', 1)
 // app.use(cors({
 //     credentials: true,
 // }))
+
+
 
 app.use(session({
     secret: process.env.SESSION_KEY,
@@ -75,6 +84,9 @@ app.use(session({
     }
 }))
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 import useragent from 'express-useragent';
 
 app.use(useragent.express())
@@ -85,6 +97,7 @@ app.use(cookies())
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", clientDomain);
     res.set("Access-Control-Allow-Credentials", 'true')
+    res.set("Access-Control-Allow-Headers", clientDomain)
     next();
 });
 
@@ -100,6 +113,8 @@ app.use(function (req, res, next) {
 
 app.use("/dataOperation", dataO);
 
+// app.use("/auth", authRoute);
+
 
 const isAuth = (req, res, next) => {
     if(req.session.isAuth) {
@@ -110,10 +125,23 @@ const isAuth = (req, res, next) => {
     }
 }
 
+// routes by google outh 20
+app.get('/login/google', passport.authenticate('google'));
+
+app.get('/oauth2/redirect/google',
+    passport.authenticate('google', { failureRedirect: '/login/failed', failureMessage: true }),
+    function(req, res) {
+      res.redirect('/');
+    });
+
 app.get("/", (req, res) => {
     // executeCrudOperation();
     // res.send("This app tries to store test results.");
     res.render('index')
+})
+
+app.get("/login/failed", (req,res) => {
+    res.send("login failed")
 })
 
 app.get("/userProfile", isAuth, async (req,res) => {
