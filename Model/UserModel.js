@@ -7,8 +7,7 @@ const UserSchema = new mongoose.Schema(
         username : {
             type: String,
             required: true,
-            max: [20, 'username too long'],
-            unique: true
+            max: [20, 'username too long']
         },
         email : {
             type: String,
@@ -17,7 +16,6 @@ const UserSchema = new mongoose.Schema(
         },
         password : {
             type: String,
-            required: true,
             max: [20, 'password too long']
         },
         OperationStat : {

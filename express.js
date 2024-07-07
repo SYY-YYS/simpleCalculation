@@ -131,7 +131,8 @@ app.get('/login/google', passport.authenticate('google'));
 app.get('/oauth2/redirect/google',
     passport.authenticate('google', { failureRedirect: '/login/failed', failureMessage: true }),
     function(req, res) {
-      res.redirect('/');
+        req.session.isAuth = true;
+      res.redirect(clientDomain);
     });
 
 
@@ -198,6 +199,9 @@ app.get("/login", (req, res) => {
     } else {
         res.send(false);
     }
+
+    // new login mode: google
+    console.log(req.se)
 });
 
 app.get("/register", (req, res) => {
@@ -216,7 +220,7 @@ app.get("/register", (req, res) => {
 //     }
 // })
 
-app.post("/login", async (req, res) => {
+app.post("/login", async (req, res) => { //bug arises if same name as google ac
 
     console.log(req.body)
     console.log(req.useragent.os)
@@ -251,7 +255,7 @@ app.post("/login", async (req, res) => {
     const token = jwt.sign(signingData, jwtSecret, {expiresIn: 1000*60*60})
 
     
-    console.log(username, "has logged in")
+    console.log(username, " has logged in")
     // send cookies to frontend?
     // res.cookie("id", req.session.id,{
     //     httpOnly: false,
