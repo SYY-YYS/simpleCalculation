@@ -20,22 +20,23 @@ passport.use(
 
             // first: check if any records (email)
             if (user) {
+                console.log("user found")
                 return callback(null, profile)
             } else { //update a new user
-
+                console.log('creating account')
                 // check if same name taken?
                 const username = profile.displayName;
-                const email = profile.email;
+                const email = profile.emails[0].value;
+                console.log(username, email)
 
                 user = new UserModel({
                     username,
-                    email,
+                    email
                 });
             
                 await user.save()
                 .then(savedUser => {
                     console.log(savedUser)
-                    res.send("registered!")
                 }).catch((err) => {
                     console.log(err)
                 })
