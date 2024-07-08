@@ -139,10 +139,10 @@ app.get("/", (req, res) => {
 })
 
 app.get("/userProfile", async (req,res) => {
-    let username = req.session.username;
-    let user = username? await UserModel.findOne({username}):undefined
+    let email = req.session.email;
+    let user = email? await UserModel.findOne({email: email}):undefined
 
-    if (!username) {
+    if (!email) {
         const token =req.header("Authorization") ? req.header("Authorization").split(" ")[1]:'null'
         // console.log(token)
         if (token !== "null") {
@@ -153,8 +153,8 @@ app.get("/userProfile", async (req,res) => {
                 res.status(403).send('token expired')
             } else {
                 console.log(decoded.exp - Date.now()/1000)
-                username = decoded.user
-                user = await UserModel.findOne({username})
+                let username = decoded.user
+                user = await UserModel.findOne({email: email})
             }
         } else {
             res.status(401).send(false);
@@ -234,8 +234,9 @@ app.post("/login", async (req, res) => {
 
     req.session.isAuth = true;
     req.session.username = username;
+    req.session.email = user.email;
 
-    console.log(username, " has logged in")
+    console.log(user.email, " has logged in")
     console.log(req.useragent.os)
 
     // below try JWT

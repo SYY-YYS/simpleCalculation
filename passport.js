@@ -16,8 +16,8 @@ passport.use(
         },
         async function verify(accessToken, refreshToken, profile, callback) {
             console.log(profile)
-            let user = await UserModel.findOne({email: profile.email})
-
+            let user = await UserModel.findOne({email: profile.emails[0].value})
+            console.log(user)
             // first: check if any records (email)
             if (user) {
                 console.log("user found")
