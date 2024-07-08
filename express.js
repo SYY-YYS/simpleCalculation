@@ -10,7 +10,7 @@ import ejs from 'ejs';
 import jwt from 'jsonwebtoken'
 import cookies from 'cookie-parser'
 
-
+import passport from 'passport';
 
 const app = express();
 
@@ -50,6 +50,7 @@ mongoose.connect(uri).then((res) => {
     console.log("MongoDB connected by mongoose.")
 });
 
+import passportSetup from "./passport.js"
 
 // password hashing
 import bcrypt from 'bcrypt';
@@ -75,6 +76,10 @@ app.use(session({
         maxAge: 3600000*24
     }
 }))
+
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 import useragent from 'express-useragent';
 
@@ -112,6 +117,20 @@ const isAuth = (req, res, next) => {
         res.redirect("/login")
     }
 }
+
+// routes by google outh 20
+app.get('/login/google', passport.authenticate('google'));
+
+app.get('/oauth2/redirect/google',
+    passport.authenticate('google', { failureRedirect: '/login/failed', failureMessage: true }),
+    function(req, res) {
+        req.session.isAuth = true;
+      res.redirect(clientDomain);
+    });
+
+app.get("/login/failed", (req,res) => {
+    res.send("login failed")
+})
 
 app.get("/", (req, res) => {
     // executeCrudOperation();
@@ -216,7 +235,7 @@ app.post("/login", async (req, res) => {
     req.session.isAuth = true;
     req.session.username = username;
 
-    console.log(username, "has logged in")
+    console.log(username, " has logged in")
     console.log(req.useragent.os)
 
     // below try JWT
