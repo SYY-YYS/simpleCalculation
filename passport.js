@@ -14,8 +14,8 @@ passport.use(
             callbackURL: '/oauth2/redirect/google',
             scope: ["profile", "email"],
         },
-        async function verify(accessToken, refreshToken, profile, callback) {
-            console.log(profile)
+        async function verify(req, accessToken, refreshToken, profile, callback) {
+            console.log(req.session)
             let user = await UserModel.findOne({email: profile.emails[0].value})
             console.log(user)
             // first: check if any records (email)
@@ -47,10 +47,11 @@ passport.use(
 )
 
 passport.serializeUser((user, done) => {
-    done(null, user);
+
+    done(null, user.id);
 });
-passport.deserializeUser((obj, done) => {
-    done(null, obj);
+passport.deserializeUser((id, done) => {
+    done(null, id);
 });
 
 export default passport;
