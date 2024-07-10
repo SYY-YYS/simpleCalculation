@@ -127,7 +127,7 @@ app.get('/oauth2/redirect/google',
         req.session.isAuth = true;
         console.log(req.user)
         // if(req.useragent.os == )
-        res.redirect(clientUrl);
+        res.status(200).redirect(clientUrl);
     });
 
 app.get("/login/failed", (req,res) => {
