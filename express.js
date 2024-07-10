@@ -125,7 +125,7 @@ app.get('/oauth2/redirect/google',
     passport.authenticate('google', { failureRedirect: '/login/failed', failureMessage: true , }),
     function(req, res) {
         req.session.isAuth = true;
-        console.log(req)
+        console.log(req.user)
         // if(req.useragent.os == )
         res.redirect(clientUrl);
     });
