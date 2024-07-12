@@ -12,7 +12,7 @@ passport.use(
             clientID: process.env.Client_ID,
             clientSecret: process.env.Client_SECRET,
             callbackURL: '/oauth2/redirect/google',
-            // scope: ["profile", "email"],
+            scope: ["profile", "email"],
         },
         async function (req, accessToken, refreshToken, profile, callback) {
             console.log(req.session)
