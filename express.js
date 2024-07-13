@@ -155,8 +155,8 @@ app.get("/userProfile", async (req,res) => {
                 res.status(403).send('token expired')
             } else {
                 console.log(decoded.exp - Date.now()/1000)
-                let username = decoded.user
                 user = await UserModel.findOne({email: email})
+                let username = user.username
             }
         } else {
             res.status(401).send(false);
@@ -166,7 +166,7 @@ app.get("/userProfile", async (req,res) => {
     
     
     const sendingData = {
-        username: username,
+        username: user.username,
         mintime: parseFloat(user.minTime.toJSON()["$numberDecimal"]),
         averagetime: parseFloat(user.averageTimeOf1Calculation.toJSON()["$numberDecimal"]),
         totaltrialnumber: parseFloat(user.TotalTrialNumber.toJSON()["$numberDecimal"])
