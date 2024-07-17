@@ -125,6 +125,20 @@ app.get('/oauth2/redirect/google',
     passport.authenticate('google', { failureRedirect: '/login/failed', failureMessage: true }),
     function(req, res) {
         req.session.isAuth = true;
+
+        const signingData = {
+            user: req.user.displayName
+        }
+        const token = jwt.sign(signingData, jwtSecret, {expiresIn: 1000*60*60})
+        res.cookie(
+        "token", token, {
+                httpOnly: false,
+                sameSite: 'none',
+                secure: true,
+                partitioned: true
+            }
+        )
+
         console.log(req.user)
         // if(req.useragent.os == )
         res.status(200).redirect(clientUrl);
