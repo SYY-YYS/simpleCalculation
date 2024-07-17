@@ -50,14 +50,14 @@ passport.serializeUser((user, done) => {
     console.log("serializing: " + user.id)
     done(null, user.id);
 });
-passport.deserializeUser(async (id, done) => {
-    console.log("deserializing: " + id)
-    let user = await UserModel.findOne({id: id}).then((user) => {
-        console.log("found user by id: " + id)
-        done(null, user);
-    }).catch((err) => {
-        console.log(err)
-    })    
-});
+// passport.deserializeUser(async (id, done) => {
+//     console.log("deserializing: " + id)
+//     let user = await UserModel.findOne({id: id}).then((user) => {
+//         console.log("found user by id: " + id)
+//         done(null, user);
+//     }).catch((err) => {
+//         console.log(err)
+//     })    
+// });
 
 export default passport;
