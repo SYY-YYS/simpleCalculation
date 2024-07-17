@@ -47,12 +47,12 @@ passport.use(
 )
 
 passport.serializeUser((user, done) => {
-    console.log("serializing: " + user._id)
-    done(null, user._id.toString());
+    console.log("serializing: " + user.id)
+    done(null, user.id);
 });
 passport.deserializeUser(async (id, done) => {
     console.log("deserializing: " + id)
-    let user = await UserModel.findOne({_id: id})
+    let user = await UserModel.findOne({id: id})
     if (user) {
         console.log("found user by id: " + id)
         done(null, user);
