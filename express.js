@@ -122,7 +122,11 @@ const isAuth = (req, res, next) => {
 app.get('/login/google', passport.authenticate('google'));
 
 app.get('/oauth2/redirect/google',
-    passport.authenticate('google', { failureRedirect: '/login/failed', failureMessage: true }),
+    passport.authenticate('google', { 
+        failureRedirect: '/login/failed', 
+        failureMessage: true,
+        successRedirect: clientUrl,
+    }),
     function(req, res) {
         req.session.isAuth = true;
 
@@ -140,8 +144,9 @@ app.get('/oauth2/redirect/google',
         )
 
         console.log(req.user)
+        res.send("good")
         // if(req.useragent.os == )
-        res.render("index", {clientUrl});
+        // res.render("index", {clientUrl});
     });
 
 

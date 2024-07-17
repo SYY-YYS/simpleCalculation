@@ -21,7 +21,7 @@ passport.use(
             // first: check if any records (email)
             if (user) {
                 console.log("user found")
-                return callback(null, profile)
+                return callback(null, user)
             } else { //update a new user
                 console.log('creating account')
                 // check if same name taken?
@@ -40,19 +40,26 @@ passport.use(
                 }).catch((err) => {
                     console.log(err)
                 })
-                return callback(null, profile)
+                return callback(null, user)
             }            
         }
     )
 )
 
 passport.serializeUser((user, done) => {
-    console.log("serial:" + user.id)
-    done(null, user.id);
+    console.log("serializing: " + user._id)
+    done(null, user._id);
 });
-passport.deserializeUser((id, done) => {
-    console.log("deser:" + id)
-    done(null, id);
+passport.deserializeUser(async (id, done) => {
+    console.log("deserializing: " + id)
+    let user = await UserModel.findOne({_id: id})
+    if (user) {
+        console.log("found user by id: " + id)
+        done(null, user);
+    } else {
+        console.log("user by id not found: " + id)
+    }
+    
 });
 
 export default passport;
