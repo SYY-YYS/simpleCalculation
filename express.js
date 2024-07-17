@@ -141,7 +141,7 @@ app.get('/oauth2/redirect/google',
 
         console.log(req.user)
         // if(req.useragent.os == )
-        res.render("/", {clientUrl});
+        res.render("index", {clientUrl});
     });
 
 
