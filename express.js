@@ -167,7 +167,17 @@ app.get("/", (req, res) => {
 
 app.get("/userProfile", async (req,res) => {
     let email = req.session.email;
-    let user = email? await UserModel.findOne({email: email}):undefined
+
+    console.log(req.user)
+
+    if (email) {
+        let user = await UserModel.findOne({email:email})
+    } else {
+        console.log(req.user.email)
+    }
+    
+
+    
 
     if (!email) {
         const token =req.header("Authorization") ? req.header("Authorization").split(" ")[1]:'null'
@@ -181,7 +191,7 @@ app.get("/userProfile", async (req,res) => {
             } else {
                 console.log(decoded.exp - Date.now()/1000)
                 user = await UserModel.findOne({email: email})
-                let username = user.username
+                // let username = user.username
             }
         } else {
             res.status(401).send(false);
@@ -189,14 +199,17 @@ app.get("/userProfile", async (req,res) => {
     }
 
     
-    
-    const sendingData = {
-        username: user.username,
-        mintime: parseFloat(user.minTime.toJSON()["$numberDecimal"]),
-        averagetime: parseFloat(user.averageTimeOf1Calculation.toJSON()["$numberDecimal"]),
-        totaltrialnumber: parseFloat(user.TotalTrialNumber.toJSON()["$numberDecimal"])
-    };
-    res.send(sendingData);
+    if (user) {
+        const sendingData = {
+            username: user.username,
+            mintime: parseFloat(user.minTime.toJSON()["$numberDecimal"]),
+            averagetime: parseFloat(user.averageTimeOf1Calculation.toJSON()["$numberDecimal"]),
+            totaltrialnumber: parseFloat(user.TotalTrialNumber.toJSON()["$numberDecimal"])
+        };
+        res.send(sendingData);
+    } else {
+        res.status(200).send(false);
+    }
 })
 app.get("/login", (req, res) => {
     console.log(req.session, req.cookies)
