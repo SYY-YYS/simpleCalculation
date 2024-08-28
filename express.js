@@ -131,21 +131,22 @@ app.get('/oauth2/redirect/google',
     }),
     function(req, res) {
         req.session.isAuth = true;
-
-        const signingData = {
-            user: req.user.displayName
-        }
-        const token = jwt.sign(signingData, jwtSecret, {expiresIn: 1000*60*60})
-        res.cookie(
-        "token", token, {
-                httpOnly: false,
-                sameSite: 'none',
-                secure: true,
-                partitioned: true,
-                domain: '.samuelsiu.work',
-                path: "/"
-            }
-        )
+        console.log(req.user)
+        req.session.email = req.user.email
+        // const signingData = {
+        //     user: req.user.displayName
+        // }
+        // const token = jwt.sign(signingData, jwtSecret, {expiresIn: 1000*60*60})
+        // res.cookie(
+        // "token", token, {
+        //         httpOnly: false,
+        //         sameSite: 'none',
+        //         secure: true,
+        //         partitioned: true,
+        //         domain: '.samuelsiu.work',
+        //         path: "/"
+        //     }
+        // )
 
         console.log(req.user)
         res.redirect(clientUrl)
