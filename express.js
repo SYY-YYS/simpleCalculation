@@ -73,7 +73,9 @@ app.use(session({
         sameSite: 'none',
         partitioned: true,
         httpOnly: true,
-        maxAge: 3600000*24
+        maxAge: 3600000*24,
+        domain: '.samuelsiu.work',
+        path: "/"
     }
 }))
 
@@ -139,7 +141,9 @@ app.get('/oauth2/redirect/google',
                 httpOnly: false,
                 sameSite: 'none',
                 secure: true,
-                partitioned: true
+                partitioned: true,
+                domain: '.samuelsiu.work',
+                path: "/"
             }
         )
 
