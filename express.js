@@ -104,6 +104,7 @@ app.use(express.urlencoded({extended: true}))
 // app.use(cors());
 app.use(function (req, res, next) {
     console.log(req.ip,req.useragent.os, Date.now())
+    console.log(req.session)
     next();
 })
 
@@ -131,8 +132,10 @@ app.get('/oauth2/redirect/google',
     }),
     function(req, res) {
         req.session.isAuth = true;
-        console.log(req.user)
+        console.log("req.user:" + req.user)
         req.session.email = req.user.email
+
+
         // const signingData = {
         //     user: req.user.displayName
         // }
