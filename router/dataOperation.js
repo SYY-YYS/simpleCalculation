@@ -67,7 +67,7 @@ router.route("/update").post(async (req, res) => {
         {username: username,
         OperationStat : {$exists : true}}
     )
-    if (userCheck) {
+    if (userCheck != []) {
         const user = await executeCrudOperation('update', username, timesOfCalculating, parseFloat(minTime),parseFloat(averagetime),parseFloat(trialnumber))
         console.log(user)
         res.send('updated')
