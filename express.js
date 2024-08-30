@@ -174,16 +174,13 @@ app.get("/userProfile", async (req,res) => {
 
     console.log(req.user)
 
+    let user;
+    
     if (email) {
-        let user = await UserModel.findOne({email:email})
+        user = await UserModel.findOne({email:email})
     } else {
-        console.log(req.user.email)
-    }
-    
+        console.log("check req.user: " + req.user)
 
-    
-
-    if (!email) {
         const token =req.header("Authorization") ? req.header("Authorization").split(" ")[1]:'null'
         // console.log(token)
         if (token !== "null") {
