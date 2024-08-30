@@ -199,8 +199,8 @@ app.get("/userProfile", async (req,res) => {
         }
     }
 
-    
-    if (user) {
+    // try user.OperationStat to check if ppl check without any data
+    if (user.OperationStat) {
         const sendingData = {
             username: user.username,
             mintime: parseFloat(user.minTime.toJSON()["$numberDecimal"]),
