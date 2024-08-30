@@ -259,7 +259,11 @@ app.post("/login", async (req, res) => {
     console.log(req.body)
     const {username, password} = req.body;
 
-    const user = await UserModel.findOne({username})
+    // just find the username with password
+    const user = await UserModel.findOne(
+        {username:username, 
+        password : {$exists : true}
+    })
 
     if(!user) {
         // return res.redirect(clientUrl + '/login');
@@ -268,7 +272,7 @@ app.post("/login", async (req, res) => {
     }
 
     console.log("user.password: " +user.password)
-    if (user.password) {
+    if (user.password == undefined) {
         return res.status(400).send("you may try gmail login")
     }
 
