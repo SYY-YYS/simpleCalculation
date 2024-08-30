@@ -104,7 +104,7 @@ app.use(express.urlencoded({extended: true}))
 // app.use(cors());
 app.use(function (req, res, next) {
     console.log(req.ip,req.useragent.os, Date.now())
-    console.log(req.session)
+    // console.log(req.session)
     next();
 })
 
@@ -172,10 +172,10 @@ app.get("/", (req, res) => {
 app.get("/userProfile", async (req,res) => {
     let email = req.session.email;
 
-    console.log(req.user)
+    console.log("req.user: " + req.user)
 
     let user;
-    
+
     if (email) {
         user = await UserModel.findOne({email:email})
     } else {
@@ -209,7 +209,7 @@ app.get("/userProfile", async (req,res) => {
         };
         res.send(sendingData);
     } else {
-        res.status(200).send(false);
+        res.status(404).send(false);
     }
 })
 app.get("/login", (req, res) => {
