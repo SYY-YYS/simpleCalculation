@@ -41,11 +41,11 @@ router.route("/")
 // set a updateFirstData
 router.route("/update").post(async (req, res) => {
     const {timesOfCalculating, minTime, averagetime, trialnumber} = req.body;
-    const username = (req.session.username) ? req.session.username : req.session.passport.user.displayName;
-    console.log(timesOfCalculating, minTime, averagetime, trialnumber, username)
+    const email = (req.session.email) ? req.session.email : req.session.passport.user.email;
+    console.log(timesOfCalculating, minTime, averagetime, trialnumber, email)
 
     // check localstorage token user after checking cookie
-    if(!username) {
+    if(!email) {
         const token =req.header("Authorization") ? req.header("Authorization").split(" ")[1]:'null'
         // console.log(token)
         if (token !== "null") {
@@ -56,7 +56,7 @@ router.route("/update").post(async (req, res) => {
                 res.status(403).send('token expired')
             } else {
                 console.log(decoded.exp - Date.now()/1000)
-                username = decoded.user
+                email = decoded.email
             }
         } else {
             res.status(401).send(false);
@@ -64,25 +64,27 @@ router.route("/update").post(async (req, res) => {
     }
 
     const userCheck = await UserModel.findOne(
-        {username: username,
+        {email: email,
         OperationStat : {$exists : true}}
     )
+    console.log("usercheck: " + userCheck)
+    // got error here "userCheck"
     if (userCheck != []) {
-        const user = await executeCrudOperation('update', username, timesOfCalculating, parseFloat(minTime),parseFloat(averagetime),parseFloat(trialnumber))
+        const user = await executeCrudOperation('update', email, timesOfCalculating, parseFloat(minTime),parseFloat(averagetime),parseFloat(trialnumber))
         console.log(user)
         res.send('updated')
         // res.json(user)
     } else {
         console.log('welcome new user')
-        const user = await updateFirstData(username, timesOfCalculating, parseFloat(minTime), parseFloat(averagetime), parseFloat(trialnumber))
+        const user = await updateFirstData(email, timesOfCalculating, parseFloat(minTime), parseFloat(averagetime), parseFloat(trialnumber))
         console.log(user)
         res.send('updated')
         // res.json(user)
     }
 })
 
-export async function updateFirstData(username, timesOfCalculating, minTime, averagetime, trialnumber) {
-    const user = await UserModel.findOne({username: username})
+export async function updateFirstData(email, timesOfCalculating, minTime, averagetime, trialnumber) {
+    const user = await UserModel.findOne({email: email})
 
     user.OperationStat = {
         [timesOfCalculating]: {

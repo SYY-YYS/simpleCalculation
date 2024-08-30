@@ -231,7 +231,7 @@ app.get("/login", (req, res) => {
             res.send('token expired')
         } else {
             console.log(decoded.exp - Date.now()/1000)
-            res.send(decoded.user)
+            res.send(decoded.email)
         }
     } else {
         res.send(false);
@@ -264,7 +264,12 @@ app.post("/login", async (req, res) => {
     if(!user) {
         // return res.redirect(clientUrl + '/login');
         console.log(username + "not existed")
-        return res.status(403).send('username not found')
+        return res.status(403).send('user not found')
+    }
+
+    console.log("user.password: " +user.password)
+    if (user.password) {
+        return res.status(400).send("you may try gmail login")
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
@@ -277,7 +282,8 @@ app.post("/login", async (req, res) => {
     
 
     req.session.isAuth = true;
-    req.session.username = username;
+    // deprecated
+    // req.session.username = username;
     req.session.email = user.email;
 
     console.log(user.email, " has logged in")
@@ -285,7 +291,7 @@ app.post("/login", async (req, res) => {
 
     // below try JWT
     const signingData = {
-        user: user.username
+        email: user.email
     }
     const token = jwt.sign(signingData, jwtSecret, {expiresIn: 1000*60*60})
 

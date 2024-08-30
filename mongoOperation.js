@@ -23,7 +23,7 @@ export async function identityCheck(collection, username, password) {
 };
 
 
-export async function executeCrudOperation(action, username, timesOfCalculating, minTime, averagetime, trialnumber) {
+export async function executeCrudOperation(action, email, timesOfCalculating, minTime, averagetime, trialnumber) {
     const uri = process.env.DB_URI;
     let mongoClient;
 
@@ -44,10 +44,10 @@ export async function executeCrudOperation(action, username, timesOfCalculating,
                 const backUserInfo = await createDocument(collection, 'samuel6', 'samuel1236', 1, 1.5, 2, 10)
                 break;
             case "update":
-                return await updateData(collection, username, timesOfCalculating, minTime, averagetime, trialnumber)
+                return await updateData(collection, email, timesOfCalculating, minTime, averagetime, trialnumber)
                 break;
             case "delete":
-                await deleteOneUser(collection, username)
+                await deleteOneUser(collection, email)
                 break;
             case "checkCurrentSize":
                 let collectionCount = await checkCurrentSize(collection);
@@ -86,7 +86,8 @@ export async function createDocument(collection, username, password, timesOfCalc
     return await collection.insertOne(userInfo);
 };
 
-export async function updateData(collection, username, timesOfCalculating, minTime, averagetime, trialnumber) {
+// current only using function
+export async function updateData(collection, email, timesOfCalculating, minTime, averagetime, trialnumber) {
     // timesOfCalculating to string for dotation
     // console.log(timesOfCalculating, typeof(minTime), typeof(averagetime), typeof(trialnumber))
     timesOfCalculating = timesOfCalculating.toString();
@@ -94,7 +95,7 @@ export async function updateData(collection, username, timesOfCalculating, minTi
     let checkTimesDotnotation = `OperationStat.${timesOfCalculating}`;
     // check if timesOfCalculatingminTime exists
     const checkTimesOfCalculating = await collection.find({
-        username: username,
+        email: email,
         [checkTimesDotnotation]: { $exists: true}
     }).toArray();
     console.log(Object.keys(checkTimesOfCalculating).length != 0 ?checkTimesOfCalculating : "timesOfCalculating not exists")
@@ -102,7 +103,7 @@ export async function updateData(collection, username, timesOfCalculating, minTi
     if (Object.keys(checkTimesOfCalculating).length != 0) {
         // 1: timesOfCalculatingminTime exists
         const ThreeeKs = await collection.find(
-            {username: username}
+            {email: email}
         ).map(async function(doc) {
             // console.log(doc)
             const Kaveragetime = doc.OperationStat[timesOfCalculating].averagetime;
@@ -138,7 +139,7 @@ export async function updateData(collection, username, timesOfCalculating, minTi
         
         return await collection.updateOne(
             
-            {username: username},
+            {email: email},
             // first try adding trialnumber using doc
             { $set: {[addingVariableToDotNotation('averagetime')] : Math.floor(calaverageTime*1000)/1000, 
              averageTimeOf1Calculation : Math.floor(caltotalaverageTime*1000)/1000},
@@ -155,7 +156,7 @@ export async function updateData(collection, username, timesOfCalculating, minTi
     // 2: not exists
 
     const ThreeeKs = await collection.find(
-        {username: username}
+        {email: email}
     ).map(async function(doc) {
 
         const Ktotalaveragetime = doc.averageTimeOf1Calculation;
@@ -177,7 +178,7 @@ export async function updateData(collection, username, timesOfCalculating, minTi
     let caltotalaverageTime = (Ktotalaveragetime*Ktotaltrialnumber+averagetime*trialnumber)/(Ktotaltrialnumber + trialnumber)
 
     return await collection.updateOne(
-        {username: username},
+        {email: email},
         { $set: {[pushingDotnotation]: {
             averagetime: averagetime,
             mintime: minTime,
@@ -193,8 +194,8 @@ export async function updateData(collection, username, timesOfCalculating, minTi
 
 };
 
-export async function deleteOneUser(collection, username) {
-    return await collection.deleteOne({username: username});
+export async function deleteOneUser(collection, email) {
+    return await collection.deleteOne({email: email});
 };
 
 export async function checkCurrentSize(collection) {
