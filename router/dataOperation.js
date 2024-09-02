@@ -93,7 +93,8 @@ export async function updateFirstData(email, timesOfCalculating, minTime, averag
             trialnumber: trialnumber
         }
     };
-
+    
+    console.log("averagetime: " + averagetime, typeof(averagetime))
     user.averageTimeOf1Calculation = averagetime;
     user.TotalTrialNumber = trialnumber;
     user.minTime = minTime;
