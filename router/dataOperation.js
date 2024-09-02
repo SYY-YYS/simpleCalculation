@@ -69,7 +69,7 @@ router.route("/update").post(async (req, res) => {
     )
     console.log("usercheck: " + userCheck)
     // got error here "userCheck"
-    if (userCheck != []) {
+    if (userCheck != null) {
         const user = await executeCrudOperation('update', email, timesOfCalculating, parseFloat(minTime),parseFloat(averagetime),parseFloat(trialnumber))
         console.log(user)
         res.send('updated')
