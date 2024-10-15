@@ -13,4 +13,4 @@ COPY . .
 
 EXPOSE 8030
 
-CMD [ "npm", "run", "nm" ]
+CMD [ "node", "express.js"]

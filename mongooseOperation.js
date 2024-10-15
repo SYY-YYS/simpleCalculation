@@ -3,7 +3,7 @@
 import mongoose from "mongoose";
 import UserModel from './Model/UserModel.js';
 
-const uri = process.env.Mongoose_URI;
+const uri = process.env.MONGOOSE_URI;
 
 
 

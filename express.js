@@ -22,9 +22,9 @@ const app = express();
 import dotenv from 'dotenv';
 dotenv.config();
 
-const clientUrl = process.env.Client_URL;
+const clientUrl = process.env.CLIENT_URL;
 
-const clientDomain = process.env.cors_domain;
+const clientDomain = process.env.CORS_DOMAIN;
 
 
 // session for cookies
@@ -34,7 +34,7 @@ import MongoDBSession from 'connect-mongodb-session';
 let MongoSession = MongoDBSession(session);
 
 // tried a new uri for mongoose
-const uri = process.env.Mongoose_URI;
+const uri = process.env.MONGOOSE_URI;
 
 const jwtSecret = process.env.JWT_SECRET;
 
